@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/inter-and-noto-sans-sc.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 — 暗金色调，呼应法律权威与庄重 === */
+      --color-primary:              #9A7B2D;
+      --color-primary-container:    #F5ECD0;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面 — 画廊风暖白底色 === */
+      --color-background:                 #FAFAF7;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F0EDE6;
+      --color-surface-container-high:     #E8E4DB;
+      --color-surface-container-highest:  #E0DBD0;
+      /* === 文字 === */
+      --color-on-surface:           #1A1A1A;
+      --color-on-surface-variant:   #77736B;
+      /* === 功能色 === */
+      --color-success:  #4A7C59;
+      --color-error:    #C0392B;
+      --color-warning:  #D4A017;
+      /* === 边框 === */
+      --color-outline:          #D4CFC5;
+      --color-outline-variant:  #E6E2DA;
+      /* === 圆角 === */
+      --radius-sm:   0.25rem;
+      --radius-md:   0.375rem;
+      --radius-lg:   0.5rem;
+      --radius-xl:   0.75rem;
+      --radius-2xl:  1rem;
+      --radius-full: 9999px;
+      /* === 阴影 === */
+      --shadow-card:   0 2px 8px rgba(0,0,0,0.06);
+      --shadow-float:  0 10px 25px rgba(0,0,0,0.1);
+      --shadow-dialog: 0 25px 50px rgba(0,0,0,0.15);
+      /* === 字体 === */
+      --font-sans: "Inter", "Noto Sans SC", system-ui, sans-serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans h-screen flex flex-col overflow-hidden">
+
+  <!-- @main-content:start -->
+
+  <!-- 顶部状态栏 -->
+  <header id="courtroom-header" class="bg-surface shrink-0 border-b border-outline-variant/20 z-30">
+    <div class="flex items-center justify-between px-5 h-13">
+      <!-- 左侧：案件名称 -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <i data-lucide="scale" class="w-4.5 h-4.5 text-primary shrink-0"></i>
+        <span id="case-name" class="text-sm font-semibold text-on-surface truncate">张三诉李四民间借贷纠纷案</span>
+      </div>
+
+      <!-- 中间：阶段指示器 -->
+      <nav id="stage-indicator" class="flex items-center gap-1" aria-label="庭审阶段">
+        <!-- 阶段1：开庭准备 - 已完成 -->
+        <div class="flex items-center gap-1">
+          <span id="stage-1" class="px-2 py-1 text-xs font-medium rounded-md bg-success/15 text-success whitespace-nowrap">开庭准备</span>
+          <i data-lucide="chevron-right" class="w-3 h-3 text-on-surface-variant/40"></i>
+        </div>
+        <!-- 阶段2：法庭调查 - 已完成 -->
+        <div class="flex items-center gap-1">
+          <span id="stage-2" class="px-2 py-1 text-xs font-medium rounded-md bg-success/15 text-success whitespace-nowrap">法庭调查</span>
+          <i data-lucide="chevron-right" class="w-3 h-3 text-on-surface-variant/40"></i>
+        </div>
+        <!-- 阶段3：举证质证 - 当前阶段 -->
+        <div class="flex items-center gap-1">
+          <span id="stage-3" class="px-2.5 py-1 text-xs font-bold rounded-md bg-primary text-on-primary whitespace-nowrap">举证质证</span>
+          <i data-lucide="chevron-right" class="w-3 h-3 text-on-surface-variant/40"></i>
+        </div>
+        <!-- 阶段4：法庭辩论 - 未到达 -->
+        <div class="flex items-center gap-1">
+          <span id="stage-4" class="px-2 py-1 text-xs font-medium rounded-md text-on-surface-variant/50 whitespace-nowrap">法庭辩论</span>
+          <i data-lucide="chevron-right" class="w-3 h-3 text-on-surface-variant/40"></i>
+        </div>
+        <!-- 阶段5：最后陈述 - 未到达 -->
+        <div class="flex items-center gap-1">
+          <span id="stage-5" class="px-2 py-1 text-xs font-medium rounded-md text-on-surface-variant/50 whitespace-nowrap">最后陈述</span>
+          <i data-lucide="chevron-right" class="w-3 h-3 text-on-surface-variant/40"></i>
+        </div>
+        <!-- 阶段6：宣判 - 未到达 -->
+        <div class="flex items-center">
+          <span id="stage-6" class="px-2 py-1 text-xs font-medium rounded-md text-on-surface-variant/50 whitespace-nowrap">宣判</span>
+        </div>
+      </nav>
+
+      <!-- 右侧：操作按钮 -->
+      <div class="flex items-center gap-1.5">
+        <button id="btn-pause" class="p-2 rounded-md hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface" title="暂停">
+          <i data-lucide="pause" class="w-4 h-4"></i>
+        </button>
+        <button id="btn-save" class="p-2 rounded-md hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface" title="保存">
+          <i data-lucide="save" class="w-4 h-4"></i>
+        </button>
+        <button id="btn-reset" class="p-2 rounded-md hover:bg-surface-container transition-colors text-on-surface-variant hover:text-on-surface" title="重置">
+          <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 三列主体区域 -->
+  <div id="courtroom-columns" class="flex flex-1 min-h-0">
+
+    <!-- 左列 - 原告/公诉方 -->
+    <section id="column-plaintiff" class="flex-1 flex flex-col min-w-0 border-r border-outline-variant/20">
+      <!-- 列顶部 -->
+      <div id="plaintiff-header" class="shrink-0 px-4 py-3 flex items-center justify-between bg-primary/5 border-b border-primary/10">
+        <div class="flex items-center gap-2">
+          <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+          <span class="text-sm font-semibold text-on-surface">原告</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span id="plaintiff-status-dot" class="w-2.5 h-2.5 rounded-full bg-success"></span>
+          <span id="plaintiff-status-text" class="text-xs font-medium text-success">发言中</span>
+        </div>
+      </div>
+      <!-- 消息列表 -->
+      <div id="plaintiff-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
+
+        <!-- 原告消息1 -->
+        <div class="bg-surface rounded-lg shadow-card p-3.5">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-surface-container-high text-on-surface-variant">#1</span>
+            <span class="text-xs font-semibold text-on-surface-variant">系统</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed">庭审正式开始</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:00:00</span>
+        </div>
+
+        <!-- 原告消息2 -->
+        <div class="bg-surface rounded-lg shadow-card p-3.5">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-surface-container-high text-on-surface-variant">#4</span>
+            <span class="text-xs font-semibold text-primary">原告</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed">原告张三诉称，被告李四于2023年1月借款10万元，约定半年归还，至今未还。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:04:32</span>
+        </div>
+
+        <!-- 原告消息3 -->
+        <div class="bg-surface rounded-lg shadow-card p-3.5">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-surface-container-high text-on-surface-variant">#8</span>
+            <span class="text-xs font-semibold text-primary">原告</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed">我方提交的证据一：借款合同原件，合同明确约定借款金额和还款期限。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:12:15</span>
+        </div>
+
+        <!-- 原告消息4 -->
+        <div class="bg-surface rounded-lg shadow-card p-3.5 border-l-2 border-primary/40">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-primary/15 text-primary">#12</span>
+            <span class="text-xs font-semibold text-primary">原告</span>
+            <span class="ml-auto inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm text-[10px] bg-success/15 text-success">
+              <span class="w-1.5 h-1.5 rounded-full bg-success animate-pulse"></span>最新
+            </span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed">针对被告的答辩，我方认为被告所称已部分还款的说法缺乏证据支持。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:22:08</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 中列 - 法官 -->
+    <section id="column-judge" class="flex-1 flex flex-col min-w-0 border-r border-outline-variant/20">
+      <!-- 列顶部 -->
+      <div id="judge-header" class="shrink-0 px-4 py-3 flex items-center justify-between bg-surface border-b border-outline-variant/20">
+        <div class="flex items-center gap-2">
+          <i data-lucide="gavel" class="w-4 h-4 text-primary"></i>
+          <span class="text-sm font-semibold text-on-surface">审判长</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span id="judge-status-dot" class="w-2.5 h-2.5 rounded-full bg-warning"></span>
+          <span id="judge-status-text" class="text-xs font-medium text-warning">等待</span>
+        </div>
+      </div>
+      <!-- 消息列表 -->
+      <div id="judge-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
+
+        <!-- 法官消息1 -->
+        <div class="bg-surface rounded-lg shadow-card p-4 border-l-3 border-primary/50">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-primary/15 text-primary">#2</span>
+            <span class="text-xs font-semibold text-primary">审判长</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed font-medium">现在开庭。本院今日依法公开审理原告张三诉被告李四民间借贷纠纷一案。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:00:15</span>
+        </div>
+
+        <!-- 法官消息2 -->
+        <div class="bg-surface rounded-lg shadow-card p-4 border-l-3 border-primary/50">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-primary/15 text-primary">#3</span>
+            <span class="text-xs font-semibold text-primary">审判长</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed font-medium">请原告陈述诉讼请求和事实理由。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:01:45</span>
+        </div>
+
+        <!-- 法官消息3 -->
+        <div class="bg-surface rounded-lg shadow-card p-4 border-l-3 border-primary/50">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-primary/15 text-primary">#7</span>
+            <span class="text-xs font-semibold text-primary">审判长</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed font-medium">请被告进行答辩。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:10:20</span>
+        </div>
+
+        <!-- 法官消息4 -->
+        <div class="bg-surface rounded-lg shadow-card p-4 border-l-3 border-primary/50">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-primary/15 text-primary">#9</span>
+            <span class="text-xs font-semibold text-primary">审判长</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed font-medium">请原告出示证据并说明证明目的。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:14:50</span>
+        </div>
+
+        <!-- 法官消息5 -->
+        <div class="bg-surface rounded-lg shadow-card p-4 border-l-3 border-primary/50">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-primary/15 text-primary">#11</span>
+            <span class="text-xs font-semibold text-primary">审判长</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed font-medium">原告质证意见？</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:18:30</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 右列 - 被告/辩护方 -->
+    <section id="column-defendant" class="flex-1 flex flex-col min-w-0">
+      <!-- 列顶部 -->
+      <div id="defendant-header" class="shrink-0 px-4 py-3 flex items-center justify-between bg-surface border-b border-outline-variant/20">
+        <div class="flex items-center gap-2">
+          <i data-lucide="user-check" class="w-4 h-4 text-on-surface-variant"></i>
+          <span class="text-sm font-semibold text-on-surface">被告</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <span id="defendant-status-dot" class="w-2.5 h-2.5 rounded-full bg-outline"></span>
+          <span id="defendant-status-text" class="text-xs font-medium text-on-surface-variant/60">静音</span>
+        </div>
+      </div>
+      <!-- 消息列表 -->
+      <div id="defendant-messages" class="flex-1 overflow-y-auto p-4 space-y-3">
+
+        <!-- 被告消息1 -->
+        <div class="bg-surface rounded-lg shadow-card p-3.5">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-surface-container-high text-on-surface-variant">#5</span>
+            <span class="text-xs font-semibold text-on-surface-variant">被告</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed">审判长，被告李四到庭。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:05:10</span>
+        </div>
+
+        <!-- 被告消息2 -->
+        <div class="bg-surface rounded-lg shadow-card p-3.5">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-surface-container-high text-on-surface-variant">#6</span>
+            <span class="text-xs font-semibold text-on-surface-variant">被告</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed">被告李四辩称，借款属实，但已陆续归还3万元，实际欠款为7万元。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:10:45</span>
+        </div>
+
+        <!-- 被告消息3 -->
+        <div class="bg-surface rounded-lg shadow-card p-3.5">
+          <div class="flex items-center gap-2 mb-1.5">
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-[10px] font-bold bg-surface-container-high text-on-surface-variant">#10</span>
+            <span class="text-xs font-semibold text-on-surface-variant">被告</span>
+          </div>
+          <p class="text-sm text-on-surface leading-relaxed">我方对原告提交的借款合同真实性无异议，但合同中还款期限的约定有歧义。</p>
+          <span class="block mt-1.5 text-[10px] text-on-surface-variant/60">09:16:25</span>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 底部输入区 -->
+  <footer id="courtroom-input" class="shrink-0 bg-surface border-t border-outline-variant/20 px-5 py-3 z-30">
+    <div class="flex items-center gap-4">
+      <!-- 左侧：发言权提示 -->
+      <div id="speaking-indicator" class="flex items-center gap-2 shrink-0">
+        <span id="speaking-dot" class="w-2.5 h-2.5 rounded-full bg-success animate-pulse"></span>
+        <span id="speaking-text" class="text-xs font-semibold text-success whitespace-nowrap">轮到你发言</span>
+      </div>
+
+      <!-- 中间：输入框 -->
+      <div class="flex-1">
+        <input id="message-input" type="text" placeholder="输入发言内容…"
+               class="w-full bg-surface-container border-none rounded-lg px-4 py-2.5 text-sm
+                      text-on-surface placeholder:text-on-surface-variant/50
+                      focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+      </div>
+
+      <!-- 右侧：操作按钮 -->
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-send" class="bg-primary text-on-primary px-4 py-2 rounded-md text-sm font-medium
+                                     hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-1.5">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>发送
+        </button>
+        <button id="btn-request-speak" class="bg-transparent text-primary border border-primary/30 px-3 py-2 rounded-md text-sm font-medium
+                                              hover:bg-primary/5 active:scale-[0.98] transition-all inline-flex items-center gap-1.5">
+          <i data-lucide="hand" class="w-3.5 h-3.5"></i>申请发言
+        </button>
+        <button id="btn-objection" class="bg-transparent text-error border border-error/30 px-3 py-2 rounded-md text-sm font-medium
+                                           hover:bg-error/5 active:scale-[0.98] transition-all inline-flex items-center gap-1.5">
+          <i data-lucide="alert-octagon" class="w-3.5 h-3.5"></i>异议
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- @main-content:end -->
+
+  <script>
+    $(function () {
+
+      // 暂停按钮 - 点击后切换暂停/继续状态
+      var isPaused = false;
+      $('#btn-pause').on('click', function () {
+        isPaused = !isPaused;
+        if (isPaused) {
+          $(this).addClass('bg-warning/10 text-warning').removeClass('text-on-surface-variant');
+          $(this).attr('title', '继续');
+          // 暂停后应实现：
+          // 1. 停止所有AI角色自动发言
+          // 2. 禁用输入框和发送按钮
+          // 3. 顶部状态栏显示"已暂停"标识
+          console.log('庭审已暂停');
+        } else {
+          $(this).removeClass('bg-warning/10 text-warning').addClass('text-on-surface-variant');
+          $(this).attr('title', '暂停');
+          console.log('庭审已继续');
+        }
+      });
+
+      // 保存按钮 - 点击保存庭审记录
+      $('#btn-save').on('click', function () {
+        // 后续应实现：
+        // 1. 收集所有列的消息内容、时间戳、序号
+        // 2. 按时间顺序合并为完整庭审笔录
+        // 3. 调用后端API保存，成功后显示toast提示
+        console.log('保存庭审记录');
+        // 临时反馈：按钮短暂变色
+        $(this).addClass('text-success');
+        setTimeout(() => { $(this).removeClass('text-success'); }, 1500);
+      });
+
+      // 重置按钮 - 点击重置庭审
+      $('#btn-reset').on('click', function () {
+        // 后续应实现：
+        // 1. 弹出确认对话框"确定要重置庭审吗？所有记录将被清除"
+        // 2. 确认后清除所有消息列表
+        // 3. 重置阶段指示器到第一步
+        // 4. 重置所有角色状态灯
+        console.log('重置庭审');
+      });
+
+      // 发送按钮 - 发送消息
+      $('#btn-send').on('click', function () {
+        var text = $('#message-input').val().trim();
+        if (!text) return;
+        // 后续应实现：
+        // 1. 将输入内容作为新消息添加到对应角色列
+        // 2. 消息序号自增
+        // 3. 清空输入框
+        // 4. 滚动到最新消息
+        // 5. 触发AI角色自动回复
+        console.log('发送消息:', text);
+        $('#message-input').val('');
+      });
+
+      // 输入框回车发送
+      $('#message-input').on('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          $('#btn-send').trigger('click');
+        }
+      });
+
+      // 申请发言按钮 - 请求法官授权发言
+      $('#btn-request-speak').on('click', function () {
+        // 后续应实现：
+        // 1. 向法官列发送一条"申请发言"的系统提示
+        // 2. 按钮变为禁用态，显示"等待授权…"
+        // 3. 法官授权后，恢复发言状态灯为绿色，更新底部提示为"轮到你发言"
+        console.log('申请发言');
+        $(this).prop('disabled', true).addClass('opacity-50 cursor-not-allowed');
+        setTimeout(() => {
+          $(this).prop('disabled', false).removeClass('opacity-50 cursor-not-allowed');
+        }, 3000);
+      });
+
+      // 异议按钮 - 提出异议
+      $('#btn-objection').on('click', function () {
+        // 后续应实现：
+        // 1. 在法官列弹出一个醒目的异议标记
+        // 2. 暂停当前发言者，等待法官裁决
+        // 3. 法官裁决后恢复庭审流程
+        console.log('提出异议');
+        $(this).addClass('bg-error/10');
+        setTimeout(() => { $(this).removeClass('bg-error/10'); }, 500);
+      });
+
+      // 阶段点击 - 点击阶段指示器切换到对应阶段（原型演示用）
+      $('#stage-indicator').on('click', 'span[id^="stage-"]', function () {
+        var stageId = $(this).attr('id');
+        var stageNum = parseInt(stageId.replace('stage-', ''));
+        // 重置所有阶段样式
+        for (var i = 1; i <= 6; i++) {
+          var $s = $('#stage-' + i);
+          if (i < stageNum) {
+            $s.removeClass('bg-primary text-on-primary text-on-surface-variant/50 font-bold').addClass('bg-success/15 text-success font-medium');
+          } else if (i === stageNum) {
+            $s.removeClass('bg-success/15 text-success text-on-surface-variant/50 font-medium').addClass('bg-primary text-on-primary font-bold');
+          } else {
+            $s.removeClass('bg-primary text-on-primary bg-success/15 text-success font-bold font-medium').addClass('text-on-surface-variant/50 font-medium');
+          }
+        }
+        console.log('切换到阶段:', $(this).text());
+      });
+
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

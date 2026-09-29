@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/inter-and-noto-sans-sc.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 — 暗金色调，呼应法律权威与庄重 === */
+      --color-primary:              #9A7B2D;
+      --color-primary-container:    #F5ECD0;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面 — 画廊风暖白底色 === */
+      --color-background:                 #FAFAF7;
+      --color-surface-container-lowest:   #FFFFFF;
+      --color-surface:                    #FFFFFF;
+      --color-surface-container:          #F0EDE6;
+      --color-surface-container-high:     #E8E4DB;
+      --color-surface-container-highest:  #E0DBD0;
+      /* === 文字 === */
+      --color-on-surface:           #1A1A1A;
+      --color-on-surface-variant:   #77736B;
+      /* === 功能色 === */
+      --color-success:  #4A7C59;
+      --color-error:    #C0392B;
+      --color-warning:  #D4A017;
+      /* === 边框 === */
+      --color-outline:          #D4CFC5;
+      --color-outline-variant:  #E6E2DA;
+      /* === 圆角 === */
+      --radius-sm:   0.25rem;
+      --radius-md:   0.375rem;
+      --radius-lg:   0.5rem;
+      --radius-xl:   0.75rem;
+      --radius-2xl:  1rem;
+      --radius-full: 9999px;
+      /* === 阴影 === */
+      --shadow-card:   0 2px 8px rgba(0,0,0,0.06);
+      --shadow-float:  0 10px 25px rgba(0,0,0,0.1);
+      --shadow-dialog: 0 25px 50px rgba(0,0,0,0.15);
+      /* === 字体 === */
+      --font-sans: "Inter", "Noto Sans SC", system-ui, sans-serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件 -->
+  <header class="bg-surface sticky top-0 z-40 border-b border-outline-variant/30">
+    <div class="max-w-7xl mx-auto h-14 flex items-center justify-between px-6">
+      <div class="flex items-center gap-2.5">
+        <i data-lucide="scale" class="text-primary w-5 h-5"></i>
+        <span class="font-bold text-lg tracking-tight">模拟法庭</span>
+      </div>
+      <nav class="flex items-center gap-1">
+        <a href="home.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">庭前准备</a>
+        <a href="courtroom.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">庭审现场</a>
+        <a href="review.html" class="px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-md" aria-current="page">庭审复盘</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件 -->
+
+  <main class="max-w-7xl mx-auto px-6 py-10">
+    <!-- @main-content:start -->
+
+    <!-- 1. 页面标题区 -->
+    <section class="mb-10">
+      <div class="flex items-start justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-on-surface tracking-tight">庭审复盘</h1>
+          <p class="text-sm text-on-surface-variant mt-1">张三诉李四民间借贷纠纷案</p>
+        </div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary/10 text-primary text-sm font-medium mt-1">
+          <i data-lucide="clock" class="w-4 h-4"></i>1小时23分钟
+        </span>
+      </div>
+    </section>
+
+    <!-- 2. 统计卡片区 -->
+    <section class="grid grid-cols-3 gap-5 mb-10">
+      <!-- 统计卡片-总发言次数 -->
+      <div class="bg-surface rounded-lg shadow-card p-5">
+        <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wide mb-2">总发言次数</p>
+        <p class="text-4xl font-bold text-on-surface">47<span class="text-base font-normal text-on-surface-variant ml-1">次</span></p>
+      </div>
+      <!-- 统计卡片-异议次数 -->
+      <div class="bg-surface rounded-lg shadow-card p-5">
+        <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wide mb-2">异议次数</p>
+        <p class="text-4xl font-bold text-error">3<span class="text-base font-normal text-on-surface-variant ml-1">次</span></p>
+      </div>
+      <!-- 统计卡片-阶段数 -->
+      <div class="bg-surface rounded-lg shadow-card p-5">
+        <p class="text-xs font-medium text-on-surface-variant uppercase tracking-wide mb-2">阶段数</p>
+        <p class="text-4xl font-bold text-on-surface">6<span class="text-base font-normal text-on-surface-variant ml-1">个阶段</span></p>
+      </div>
+    </section>
+
+    <!-- 3. 阶段筛选区 -->
+    <section class="mb-8">
+      <div id="stage-filter" class="flex items-center gap-2 flex-wrap">
+        <!-- 筛选标签-全部 -->
+        <button id="filter-all" class="filter-tag px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-primary/10 text-primary" data-stage="all">全部</button>
+        <!-- 筛选标签-开庭准备 -->
+        <button id="filter-prepare" class="filter-tag px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" data-stage="prepare">开庭准备</button>
+        <!-- 筛选标签-法庭调查 -->
+        <button id="filter-investigate" class="filter-tag px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" data-stage="investigate">法庭调查</button>
+        <!-- 筛选标签-举证质证 -->
+        <button id="filter-evidence" class="filter-tag px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" data-stage="evidence">举证质证</button>
+        <!-- 筛选标签-法庭辩论 -->
+        <button id="filter-debate" class="filter-tag px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" data-stage="debate">法庭辩论</button>
+        <!-- 筛选标签-最后陈述 -->
+        <button id="filter-statement" class="filter-tag px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" data-stage="statement">最后陈述</button>
+        <!-- 筛选标签-宣判 -->
+        <button id="filter-verdict" class="filter-tag px-3 py-1.5 rounded-md text-sm font-medium transition-colors bg-surface-container text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high" data-stage="verdict">宣判</button>
+      </div>
+    </section>
+
+    <!-- 4. 时间线消息列表 -->
+    <section class="mb-12">
+      <div id="timeline-list" class="space-y-0">
+
+        <!-- 时间线消息1 - 开庭准备 - 法官 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="prepare">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-warning flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-warning">法</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">审判长 王明</span>
+              <span class="text-xs text-on-surface-variant">第1次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">开庭准备</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">现在开庭。本案系张三诉李四民间借贷纠纷一案，双方当事人及其诉讼代理人已到庭，经核对无误。现在宣布合议庭组成人员，由审判长王明、审判员赵华、人民陪审员孙平组成合议庭。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">09:00:00</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息2 - 开庭准备 - 法官 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="prepare">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-warning flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-warning">法</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">审判长 王明</span>
+              <span class="text-xs text-on-surface-variant">第2次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">开庭准备</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">双方当事人如认为合议庭组成人员与本案有利害关系，可以申请回避。原告方是否申请回避？</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">09:02:15</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息3 - 开庭准备 - 原告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="prepare">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-success flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-success">原</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">原告 张三</span>
+              <span class="text-xs text-on-surface-variant">第3次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">开庭准备</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">不申请回避。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">09:03:20</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息4 - 法庭调查 - 法官 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="investigate">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-warning flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-warning">法</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">审判长 王明</span>
+              <span class="text-xs text-on-surface-variant">第8次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">法庭调查</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">现在进入法庭调查阶段。请原告陈述诉讼请求及事实理由。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">09:15:00</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息5 - 法庭调查 - 原告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="investigate">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-success flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-success">原</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">原告 张三</span>
+              <span class="text-xs text-on-surface-variant">第9次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">法庭调查</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">诉讼请求如下：请求判令被告偿还借款本金人民币50万元及利息，利息按年利率6%自2023年3月1日起计算至实际清偿之日止。事实与理由：2023年2月1日，被告李四因经营需要向我借款50万元，双方签订了《借款合同》，约定借款期限为一年，年利率6%。借款到期后，被告未按约定归还本金及利息，经多次催要未果。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">09:17:30</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息6 - 举证质证 - 原告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="evidence">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-success flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-success">原</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">原告 张三</span>
+              <span class="text-xs text-on-surface-variant">第15次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">举证质证</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">异议</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">现提交以下证据：证据一，《借款合同》原件，证明双方存在借贷关系及约定的利率和期限；证据二，银行转账凭证，证明我已将50万元转至被告账户；证据三，微信聊天记录截图，证明被告承认借款事实并表示会尽快还款。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">09:35:00</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息7 - 举证质证 - 被告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="evidence">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-primary flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-primary">被</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">被告 李四</span>
+              <span class="text-xs text-on-surface-variant">第18次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">举证质证</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">对原告提交的证据一真实性无异议，但合同中"还款期限"条款存在歧义，我方认为约定的还款期限并非一年，而是两年。对证据二无异议。对证据三的证明目的有异议，该聊天记录系断章取义，不能完整反映双方沟通内容。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">09:42:10</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息8 - 法庭辩论 - 原告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="debate">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-success flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-success">原</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">原告 张三</span>
+              <span class="text-xs text-on-surface-variant">第28次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">法庭辩论</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">借款事实清楚，证据充分。《借款合同》明确约定借款期限为一年，被告所称"还款期限存在歧义"没有依据。合同第四条明确写明"借款期限自2023年2月1日起至2024年1月31日止"，不存在任何歧义。被告未按期还款已构成违约，应承担还款责任及利息。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">10:05:00</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息9 - 法庭辩论 - 被告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="debate">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-primary flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-primary">被</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">被告 李四</span>
+              <span class="text-xs text-on-surface-variant">第32次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">法庭辩论</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">我方已偿还10万元本金，有银行转账记录为证。关于合同条款，合同第三条与第四条对还款期限的表述存在矛盾，应根据合同整体解释原则作出有利于借款人的解释。此外，原告主张的利息过高，请求法院依法调整。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">10:12:30</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息10 - 最后陈述 - 原告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="statement">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-success flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-success">原</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">原告 张三</span>
+              <span class="text-xs text-on-surface-variant">第40次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">最后陈述</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">请求法院支持我方全部诉讼请求，判令被告偿还借款本金及利息，维护原告的合法权益。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">10:18:00</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息11 - 最后陈述 - 被告 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="statement">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-primary flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-primary">被</span>
+            </div>
+            <div class="w-px flex-1 bg-outline-variant/40 mt-2"></div>
+          </div>
+          <div class="pb-8 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">被告 李四</span>
+              <span class="text-xs text-on-surface-variant">第42次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-primary/10 text-primary">最后陈述</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">我方已偿还10万元，剩余款项愿意分期偿还。请求法院对利息部分予以调整，并给予合理的还款期限。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">10:19:30</span>
+          </div>
+        </div>
+
+        <!-- 时间线消息12 - 宣判 - 法官 -->
+        <div class="timeline-item flex gap-4 relative" data-stage="verdict">
+          <div class="flex flex-col items-center relative z-10">
+            <div class="w-9 h-9 rounded-full border-2 border-warning flex items-center justify-center bg-surface shrink-0">
+              <span class="text-xs font-bold text-warning">法</span>
+            </div>
+            <!-- 最后一项不显示竖线 -->
+          </div>
+          <div class="pb-2 flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-sm font-semibold text-on-surface">审判长 王明</span>
+              <span class="text-xs text-on-surface-variant">第47次发言</span>
+              <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">宣判</span>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">本庭经审理查明，原告张三与被告李四于2023年2月1日签订《借款合同》，原告依约向被告支付借款50万元，借款到期后被告已偿还10万元，尚欠40万元未还。判决如下：被告李四于本判决生效之日起三十日内偿还原告张三借款本金40万元及相应利息，利息按年利率6%计算。本案诉讼费由被告承担。如不服本判决，可在判决书送达之日起十五日内向本院递交上诉状。现在闭庭。</p>
+            <span class="text-xs text-on-surface-variant mt-1.5 block">10:23:00</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 5. 各方发言分析区 -->
+    <section class="mb-10">
+      <h2 class="text-base font-semibold text-on-surface mb-5">各方发言分析</h2>
+      <div class="grid grid-cols-2 gap-5">
+
+        <!-- 原告方分析卡片 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-8 h-8 rounded-full border-2 border-success flex items-center justify-center bg-surface">
+              <span class="text-xs font-bold text-success">原</span>
+            </div>
+            <span class="text-base font-semibold text-on-surface">原告方</span>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface-variant">发言次数</span>
+              <span class="text-sm font-semibold text-on-surface">15次</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface-variant">提交证据</span>
+              <span class="text-sm font-semibold text-on-surface">3份</span>
+            </div>
+            <div class="pt-2 border-t border-outline-variant/20">
+              <p class="text-xs font-medium text-on-surface-variant mb-2">核心论点</p>
+              <div class="space-y-1.5">
+                <div class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-success mt-1.5 shrink-0"></span>
+                  <span class="text-sm text-on-surface">借款事实清楚，证据充分</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-success mt-1.5 shrink-0"></span>
+                  <span class="text-sm text-on-surface">合同约定明确，不存在歧义</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-success mt-1.5 shrink-0"></span>
+                  <span class="text-sm text-on-surface">被告未按期还款，构成违约</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 被告方分析卡片 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2.5 mb-4">
+            <div class="w-8 h-8 rounded-full border-2 border-primary flex items-center justify-center bg-surface">
+              <span class="text-xs font-bold text-primary">被</span>
+            </div>
+            <span class="text-base font-semibold text-on-surface">被告方</span>
+          </div>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface-variant">发言次数</span>
+              <span class="text-sm font-semibold text-on-surface">12次</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-on-surface-variant">提交证据</span>
+              <span class="text-sm font-semibold text-on-surface">2份</span>
+            </div>
+            <div class="pt-2 border-t border-outline-variant/20">
+              <p class="text-xs font-medium text-on-surface-variant mb-2">核心论点</p>
+              <div class="space-y-1.5">
+                <div class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></span>
+                  <span class="text-sm text-on-surface">已部分还款10万元</span>
+                </div>
+                <div class="flex items-start gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></span>
+                  <span class="text-sm text-on-surface">合同条款存在歧义，应作有利解释</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>lucide.createIcons();</script>
+
+  <script>
+  $(function() {
+    // 阶段筛选交互
+    $('#stage-filter').on('click', '.filter-tag', function() {
+      var stage = $(this).data('stage');
+
+      // 更新选中标签样式
+      $('.filter-tag').removeClass('bg-primary/10 text-primary').addClass('bg-surface-container text-on-surface-variant');
+      $(this).removeClass('bg-surface-container text-on-surface-variant').addClass('bg-primary/10 text-primary');
+
+      // 根据阶段筛选时间线消息
+      if (stage === 'all') {
+        $('.timeline-item').show();
+      } else {
+        $('.timeline-item').hide();
+        $('.timeline-item[data-stage="' + stage + '"]').show();
+      }
+    });
+  });
+  </script>
+</body>
+
+</html>

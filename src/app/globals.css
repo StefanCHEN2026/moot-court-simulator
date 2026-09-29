@@ -1,0 +1,202 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.25rem;
+  --radius-4xl: 1.5rem;
+  --radius-full: 9999px;
+  --font-sans:
+    'Inter', 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  --font-serif:
+    'Noto Serif SC', 'Songti SC', 'SimSun', ui-serif, Georgia, Cambria,
+    'Times New Roman', Times, serif;
+  /* 原型自定义变量映射 */
+  --color-primary-container: #F5ECD0;
+  --color-success: #4A7C59;
+  --color-warning: #D4A017;
+  --color-outline: #D4CFC5;
+  --color-outline-variant: #E6E2DA;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface: #FFFFFF;
+  --color-surface-container: #F0EDE6;
+  --color-surface-container-high: #E8E4DB;
+  --color-surface-container-highest: #E0DBD0;
+  --color-on-surface: #1A1A1A;
+  --color-on-surface-variant: #77736B;
+  --color-on-primary: #ffffff;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-float: 0 10px 25px rgba(0,0,0,0.1);
+  --shadow-dialog: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+:root {
+  --radius: 0.5rem;
+  /* 画廊风暖白底色 + 暗金主色调 */
+  --background: #FAFAF7;
+  --foreground: #1A1A1A;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A1A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1A1A1A;
+  --primary: #9A7B2D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F5ECD0;
+  --secondary-foreground: #1A1A1A;
+  --muted: #F0EDE6;
+  --muted-foreground: #77736B;
+  --accent: #F5ECD0;
+  --accent-foreground: #1A1A1A;
+  --destructive: #C0392B;
+  --border: #E6E2DA;
+  --input: #F0EDE6;
+  --ring: #9A7B2D;
+  --chart-1: #9A7B2D;
+  --chart-2: #4A7C59;
+  --chart-3: #C0392B;
+  --chart-4: #D4A017;
+  --chart-5: #77736B;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #1A1A1A;
+  --sidebar-primary: #9A7B2D;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F5ECD0;
+  --sidebar-accent-foreground: #1A1A1A;
+  --sidebar-border: #E6E2DA;
+  --sidebar-ring: #9A7B2D;
+}
+
+.dark {
+  --background: #1A1A1A;
+  --foreground: #FAFAF7;
+  --card: #2A2A2A;
+  --card-foreground: #FAFAF7;
+  --popover: #2A2A2A;
+  --popover-foreground: #FAFAF7;
+  --primary: #D4A017;
+  --primary-foreground: #1A1A1A;
+  --secondary: #3A3A3A;
+  --secondary-foreground: #FAFAF7;
+  --muted: #333333;
+  --muted-foreground: #AAAAAA;
+  --accent: #3A3A3A;
+  --accent-foreground: #FAFAF7;
+  --destructive: #E74C3C;
+  --border: #444444;
+  --input: #333333;
+  --ring: #D4A017;
+  --chart-1: #D4A017;
+  --chart-2: #6BAF7D;
+  --chart-3: #E74C3C;
+  --chart-4: #F0C040;
+  --chart-5: #AAAAAA;
+  --sidebar: #222222;
+  --sidebar-foreground: #FAFAF7;
+  --sidebar-primary: #D4A017;
+  --sidebar-primary-foreground: #1A1A1A;
+  --sidebar-accent: #3A3A3A;
+  --sidebar-accent-foreground: #FAFAF7;
+  --sidebar-border: #444444;
+  --sidebar-ring: #D4A017;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+body {
+  @apply font-sans;
+}
+
+/* ==================== 工具类 ==================== */
+
+/* 隐藏滚动条（保持可滚动） */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* iOS 安全区域适配 */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* 长文件名截断 */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==================== 无障碍 ==================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
