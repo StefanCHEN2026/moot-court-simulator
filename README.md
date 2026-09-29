@@ -50,7 +50,8 @@ npm install -g pnpm
 ### 安装与运行
 
 ```bash
-git clone <your-repo-url>
+# 把 <你的用户名> 换成你的 GitHub 用户名
+git clone https://github.com/<你的用户名>/moot-court-simulator.git
 cd moot-court-simulator
 
 pnpm install
