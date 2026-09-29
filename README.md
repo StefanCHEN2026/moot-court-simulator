@@ -3,11 +3,11 @@
 [![CI](https://github.com/StefanCHEN2026/moot-court-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/StefanCHEN2026/moot-court-simulator/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**在线体验（网页版）**：<https://mootcourt.coze.site> — 无需安装，打开即可直接开庭。
-
 多智能体交互式模拟法庭训练平台。由**法官 AI** 主持庭审流程，**对手 AI** 扮演对方当事人，用户扮演本方，三方按照真实的庭审程序进行对抗式辩论。
 
 支持**民事 / 刑事 / 国际仲裁**三种庭审模式，覆盖开庭准备 → 法庭调查 → 举证质证 → 法庭辩论 → 最后陈述 → 宣判的完整流程。
+
+**在线体验（网页版）**：<https://mootcourt.coze.site> 
 
 > ⚠️ **免责声明**：本项目为教学与训练工具，案件均为虚构示例，AI 生成的一切内容**不构成法律意见**，不得用于真实诉讼决策。
 
