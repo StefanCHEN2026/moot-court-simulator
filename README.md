@@ -121,10 +121,6 @@ LLM_BASE_URL=http://localhost:11434/v1 ; LLM_MODEL=llama3.1 ; LLM_API_KEY=ollama
 
 ---
 
-## 配置（设置页面）
-
-打开 <http://localhost:5000/settings>，可在界面上配置并点「测试连接」验证：
-
 ### 大模型
 
 接口地址、API Key、文本模型、识图模型、请求超时。密钥保存在服务端 `data/settings.json`（已 gitignore），**不会回传浏览器**，页面只显示掩码提示（如 `••••1234`）；留空表示不修改。
