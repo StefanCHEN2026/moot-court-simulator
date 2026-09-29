@@ -1,5 +1,8 @@
 # 模拟法庭（Moot Court Simulator）
 
+[![CI](https://github.com/StefanCHEN2026/moot-court-simulator/actions/workflows/ci.yml/badge.svg)](https://github.com/StefanCHEN2026/moot-court-simulator/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 多智能体交互式模拟法庭训练平台。由**法官 AI** 主持庭审流程，**对手 AI** 扮演对方当事人，用户扮演本方，三方按照真实的庭审程序进行对抗式辩论。
 
 支持**民事 / 刑事 / 国际仲裁**三种庭审模式，覆盖开庭准备 → 法庭调查 → 举证质证 → 法庭辩论 → 最后陈述 → 宣判的完整流程。
@@ -50,8 +53,7 @@ npm install -g pnpm
 ### 安装与运行
 
 ```bash
-# 把 <你的用户名> 换成你的 GitHub 用户名
-git clone https://github.com/<你的用户名>/moot-court-simulator.git
+git clone https://github.com/StefanCHEN2026/moot-court-simulator.git
 cd moot-court-simulator
 
 pnpm install
@@ -91,6 +93,7 @@ pnpm validate     # 类型检查 + Lint
 | `LLM_TIMEOUT_MS` | 否 | 单次请求超时，默认 `60000` |
 | `UPLOAD_DIR` | 否 | 上传文件目录，默认 `./data/uploads` |
 | `LAWS_DATA_DIR` | 否 | 法规 JSON 目录，默认 `./data/laws` |
+| `ALLOW_PRIVATE_ENDPOINTS` | 否 | 设为 `true` 才允许把模型/MCP 地址指向本机与内网（默认拒绝） |
 | `PORT` | 否 | 服务端口，默认 `5000` |
 
 **接入其他模型示例**（任选其一，均为 OpenAI 兼容）：
@@ -102,12 +105,17 @@ LLM_BASE_URL=https://api.openai.com/v1 ; LLM_MODEL=gpt-4o ; LLM_VISION_MODEL=gpt
 LLM_BASE_URL=https://api.moonshot.cn/v1 ; LLM_MODEL=moonshot-v1-32k
 # 通义千问
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1 ; LLM_MODEL=qwen-plus
-# 本地 Ollama（API Key 可随意填写）
-LLM_BASE_URL=http://localhost:11434/v1 ; LLM_MODEL=llama3.1 ; LLM_API_KEY=ollama
+# 本地 Ollama（需同时放行本机地址，见下）
+LLM_BASE_URL=http://localhost:11434/v1 ; LLM_MODEL=llama3.1 ; LLM_API_KEY=ollama ; ALLOW_PRIVATE_ENDPOINTS=true
 ```
 
 > 配置优先级：**设置页面（`data/settings.json`）> 环境变量 > 内置默认值**。
 > 页面上留空的字段会回退到环境变量，因此两种方式可以混用。
+
+> **出站地址限制（SSRF 防护）**：接口默认无鉴权，因此默认**拒绝**把模型接口或
+> MCP 地址指向本机与内网（`localhost`、`127.0.0.1`、`10.x`、`192.168.x`、
+> `169.254.x` 等），避免被当作访问内网的跳板。使用本地模型（Ollama、本地
+> vLLM）或本地 MCP 时，需显式设置 `ALLOW_PRIVATE_ENDPOINTS=true` 放行。
 
 ---
 
@@ -139,6 +147,9 @@ LLM_BASE_URL=http://localhost:11434/v1 ; LLM_MODEL=llama3.1 ; LLM_API_KEY=ollama
 pnpm dev:mock-mcp        # 启动示例法律数据库 MCP（:3300）
 # 设置页填写 http://localhost:3300/mcp 并启用，点「测试连接」应显示 search_law
 ```
+
+> 注意：MCP 地址同样受上面的出站地址限制约束，指向 `localhost` 时需先设置
+> `ALLOW_PRIVATE_ENDPOINTS=true`（本地调试可在 `.env.local` 中临时开启）。
 
 ---
 
@@ -227,6 +238,9 @@ data/
 
 **法律检索（MCP）没有生效**
 到「设置」页面确认已勾选启用、地址无误，并用「测试连接」确认能列出工具；服务端需支持 MCP 的 HTTP（JSON-RPC）传输。关闭状态下不会产生任何 MCP 调用。
+
+**保存设置时报「不允许访问本机地址」**
+这是出站地址防护在起作用：模型/MCP 地址默认不能指向本机或内网。确需使用本地服务（Ollama、本地 vLLM、本地 MCP）时，设置 `ALLOW_PRIVATE_ENDPOINTS=true` 后重启。
 
 **改了设置但没生效**
 设置保存在 `data/settings.json`，保存后立即生效（无需重启）；若同名字段在环境变量中也有配置，以设置页面为准。

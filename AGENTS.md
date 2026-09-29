@@ -108,6 +108,8 @@ pnpm test:trial-flow  # 自动把一场庭审理到宣判并校验
 - **模型配置只从 `src/lib/settings` 读取**，不要在业务代码里直接读 `process.env.LLM_*`
 - **工具调用由 `client.ts` 的回环统一处理**，不要在 Agent 里手工拼装 tool_calls
 - **MCP 交互统一走 `src/lib/mcp`**，且必须在未启用/失败时优雅退化
+- **服务端发起外部请求前必须用 `src/lib/net/outbound-url.ts` 校验目标地址**
+  （仅 http/https，拒绝本机与内网/保留地址），防止 SSRF
 - **仅后端（API Routes / 服务端代码）可引入 `fs`、`path` 等 Node 模块**；客户端组件中禁止
 - 文件上传/读取统一走 `src/lib/storage/`，不要在路由里直接操作磁盘
 - 使用 Link 组件而非 <a> 标签进行页面导航

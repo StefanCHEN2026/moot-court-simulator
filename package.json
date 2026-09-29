@@ -4,6 +4,14 @@
   "description": "多智能体交互式模拟法庭训练平台 — 法官 AI、对手 AI 与用户按真实庭审程序进行对抗",
   "license": "MIT",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StefanCHEN2026/moot-court-simulator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/StefanCHEN2026/moot-court-simulator/issues"
+  },
+  "homepage": "https://github.com/StefanCHEN2026/moot-court-simulator#readme",
   "scripts": {
     "dev": "next dev -p 5000",
     "build": "next build",

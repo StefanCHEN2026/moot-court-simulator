@@ -4,8 +4,12 @@
 // 只实现本项目需要的三个方法：initialize / tools/list / tools/call。
 // 请求参数一律以结构化对象传递，客户端不做任何查询文本拼装。
 //
+// 每次请求前会校验出站地址（SSRF 防护），参见 assertSafeOutboundUrl。
+//
 // 协议参考：Model Context Protocol 2024-11-05
 // ============================================================
+
+import { assertSafeOutboundUrl } from '@/lib/net/outbound-url';
 
 export interface McpTool {
   name: string;
@@ -93,7 +97,8 @@ export class McpHttpClient {
     const id = this.nextId++;
 
     try {
-      const response = await fetch(this.endpoint, {
+      const url = await assertSafeOutboundUrl(this.endpoint);
+      const response = await fetch(url, {
         method: 'POST',
         headers: this.buildHeaders(),
         body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),

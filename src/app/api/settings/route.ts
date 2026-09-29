@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPublicSettings, saveSettings } from '@/lib/settings/store';
+import { assertSafeOutboundUrl } from '@/lib/net/outbound-url';
 import { SettingsPatch } from '@/lib/settings/types';
 
 /** GET /api/settings — 读取设置（密钥只返回掩码提示） */
@@ -50,6 +51,24 @@ export async function PUT(request: NextRequest) {
       for (const [name, value] of Object.entries(mcp.headers)) {
         if (typeof value !== 'string') {
           return NextResponse.json({ error: `请求头 ${name} 的值必须是字符串` }, { status: 400 });
+        }
+      }
+    }
+
+    // 出站地址安全校验（SSRF 防护）：内网/本机地址默认拒绝，
+    // 本地模型服务需设置 ALLOW_PRIVATE_ENDPOINTS=true
+    for (const [label, value] of [
+      ['LLM_BASE_URL', body.llm?.baseUrl],
+      ['MCP 地址', body.legalMcp?.endpoint],
+    ] as const) {
+      if (value) {
+        try {
+          await assertSafeOutboundUrl(value);
+        } catch (e) {
+          return NextResponse.json(
+            { error: `${label}：${e instanceof Error ? e.message : '地址不被允许'}` },
+            { status: 400 }
+          );
         }
       }
     }

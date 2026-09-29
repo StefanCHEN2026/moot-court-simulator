@@ -54,6 +54,8 @@ pnpm build      # 生产构建
 pnpm dev:mock-llm
 
 # 终端 2：把应用指向 mock 模型并启动
+# 注意 ALLOW_PRIVATE_ENDPOINTS=true —— 出站地址默认禁止指向本机，本地调试需放行
+ALLOW_PRIVATE_ENDPOINTS=true \
 LLM_BASE_URL=http://localhost:3200/v1 LLM_API_KEY=test LLM_MODEL=mock pnpm dev
 
 # 终端 3：自动把一场庭审理到宣判，检查是否产出判决、是否报错
@@ -73,7 +75,8 @@ pnpm dev:mock-mcp
 # 终端 2：让 mock 模型主动发起工具调用
 MOCK_TOOL_CALL=1 pnpm dev:mock-llm
 
-# 终端 3：应用；然后在 /settings 启用 MCP 并填 http://localhost:3300/mcp
+# 终端 3：应用（同样需要放行本机地址）；然后在 /settings 启用 MCP 并填 http://localhost:3300/mcp
+ALLOW_PRIVATE_ENDPOINTS=true pnpm dev
 pnpm test:trial-flow
 ```
 

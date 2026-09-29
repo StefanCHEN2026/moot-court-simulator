@@ -12,6 +12,7 @@
 
 import { MessageForLLM } from '@/types/court';
 import { resolveLLMConfig, isLLMConfigured, type ResolvedLLMConfig } from '@/lib/settings/store';
+import { assertSafeOutboundUrl } from '@/lib/net/outbound-url';
 
 export { isLLMConfigured };
 export type { ResolvedLLMConfig };
@@ -116,7 +117,8 @@ async function postChatCompletion(
       payload.tool_choice = 'auto';
     }
 
-    const response = await fetch(chatCompletionsUrl(config.baseUrl), {
+    const url = await assertSafeOutboundUrl(chatCompletionsUrl(config.baseUrl));
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
