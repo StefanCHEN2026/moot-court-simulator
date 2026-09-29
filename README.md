@@ -279,3 +279,4 @@ pnpm build && pnpm start
 
 - 界面组件基于 [shadcn/ui](https://ui.shadcn.com)
 - 文档解析基于 [mammoth](https://github.com/mwilliamson/mammoth.js) 与 [pdfjs-dist](https://mozilla.github.io/pdf.js/)
+- 内置仲裁案件「南洋长歌：1921菲律宾华商西文簿记案」取材于陈思翰的论文《据法力争：1921年菲律宾〈西文簿记法〉与华商的应对》，该论文未随本仓库分发
